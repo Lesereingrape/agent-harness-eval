@@ -9,9 +9,10 @@ from __future__ import annotations
 
 import json
 import time
-from dataclasses import dataclass, field, asdict
+from collections.abc import Iterator
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Iterator, Literal
+from typing import Any, Literal
 
 StepKind = Literal["llm", "tool", "result", "error", "note"]
 
@@ -58,7 +59,7 @@ class Trace:
         return d
 
     @classmethod
-    def from_dict(cls, d: dict[str, Any]) -> "Trace":
+    def from_dict(cls, d: dict[str, Any]) -> Trace:
         steps = [Step(**s) for s in d.pop("steps", [])]
         return cls(steps=steps, **d)
 
@@ -135,8 +136,7 @@ class _Span:
 
 def write_traces(path: str | Path, traces: Iterator[Trace] | list[Trace]) -> None:
     with open(path, "w", encoding="utf-8") as f:
-        for t in traces:
-            f.write(json.dumps(t.to_dict(), ensure_ascii=False) + "\n")
+        f.writelines(json.dumps(t.to_dict(), ensure_ascii=False) + "\n" for t in traces)
 
 
 def read_traces(path: str | Path) -> list[Trace]:

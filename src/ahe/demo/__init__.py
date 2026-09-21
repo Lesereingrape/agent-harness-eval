@@ -1,3 +1,3 @@
 from .agents import flaky, looper, oracle
 
-__all__ = ["oracle", "looper", "flaky"]
+__all__ = ["flaky", "looper", "oracle"]

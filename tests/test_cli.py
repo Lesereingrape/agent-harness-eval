@@ -2,9 +2,9 @@ import json
 from pathlib import Path
 
 from ahe.cli import main
-from ahe.suite import Runner, Suite, Task
 from ahe.demo import flaky, looper, oracle
-from ahe.trace import read_traces, TraceRecorder
+from ahe.suite import Runner, Suite, Task
+from ahe.trace import TraceRecorder, read_traces
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 

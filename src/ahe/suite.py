@@ -8,9 +8,9 @@ capturing a `Trace` per rollout and scoring it with the task's scorer.
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable
 
 from .judge import Judge, JudgeVerdict
 from .metrics import BehaviorMetrics, compute_metrics
@@ -28,8 +28,8 @@ class Task:
     criteria: str = ""
 
     @classmethod
-    def from_dict(cls, d: dict) -> "Task":
-        allowed = {f for f in Task.__dataclass_fields__}
+    def from_dict(cls, d: dict) -> Task:
+        allowed = set(Task.__dataclass_fields__)
         return cls(**{k: v for k, v in d.items() if k in allowed})
 
 
@@ -39,7 +39,7 @@ class Suite:
     tasks: list[Task]
 
     @classmethod
-    def load(cls, path: str | Path) -> "Suite":
+    def load(cls, path: str | Path) -> Suite:
         d = json.loads(Path(path).read_text(encoding="utf-8"))
         return cls(name=d.get("name", Path(path).stem),
                    tasks=[Task.from_dict(t) for t in d["tasks"]])
@@ -81,7 +81,7 @@ class Runner:
                 self.agent(task, rec)
                 last_exc = None
                 break
-            except Exception as e:  # noqa: BLE001 - record and retry rollout
+            except Exception as e:
                 last_exc = e
         trace = rec.trace
         if last_exc is not None:

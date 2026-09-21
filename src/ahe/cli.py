@@ -64,7 +64,7 @@ def cmd_compare(args: argparse.Namespace) -> int:
     sa = [1.0 if a[t].meta.get("success") else 0.0 for t in common]
     sb = [1.0 if b[t].meta.get("success") else 0.0 for t in common]
     res = paired_bootstrap(sa, sb, n_resamples=args.resamples, seed=args.seed)
-    pa, pb = zip(*[(bool(a[t].meta.get("success")), bool(b[t].meta.get("success"))) for t in common])
+    pa, pb = zip(*[(bool(a[t].meta.get("success")), bool(b[t].meta.get("success"))) for t in common], strict=False)
     print(f"tasks compared : {len(common)}")
     print(f"A success rate : {sum(sa)/len(sa):.3f}")
     print(f"B success rate : {sum(sb)/len(sb):.3f}")
@@ -89,7 +89,7 @@ def cmd_demo(args: argparse.Namespace) -> int:
 def _print_table(rows) -> None:
     print(f"{'task':<6}{'reward':>7}{'ok':>5}{'steps':>7}{'tools':>7}{'err':>5}{'redun':>7}{'recov':>7}{'tokens':>8}")
     for task_id, reward, m, ok in rows:
-        print(f"{task_id:<6}{reward:>7.2f}{str(bool(ok)):>5}{m.n_steps:>7}{m.n_tool_calls:>7}"
+        print(f"{task_id:<6}{reward:>7.2f}{bool(ok)!s:>5}{m.n_steps:>7}{m.n_tool_calls:>7}"
               f"{m.n_errors:>5}{m.redundant_call_rate:>7.2f}{m.recovery_rate:>7.2f}{m.total_tokens:>8}")
 
 

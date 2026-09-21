@@ -8,6 +8,7 @@ wasteful. This is what you compare when two harnesses are both at ceiling.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from itertools import pairwise
 
 from .trace import Trace
 
@@ -32,14 +33,14 @@ def compute_metrics(trace: Trace) -> BehaviorMetrics:
 
     redundant = sum(
         1
-        for a, b in zip(tools, tools[1:])
+        for a, b in pairwise(tools)
         if a.name == b.name and a.payload.get("args") == b.payload.get("args")
     )
 
     # Recovery: a failed tool call immediately followed by a successful one.
     recoverable = 0
     recovered = 0
-    for prev, nxt in zip(tools, tools[1:]):
+    for prev, nxt in pairwise(tools):
         if prev.payload.get("ok") is False:
             recoverable += 1
             if nxt.payload.get("ok") is not False:

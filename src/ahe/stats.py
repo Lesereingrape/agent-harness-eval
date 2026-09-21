@@ -40,7 +40,7 @@ def paired_bootstrap(
         raise ValueError("paired samples must be equal-length and non-empty")
     rng = random.Random(seed)
     n = len(a)
-    deltas = [bi - ai for ai, bi in zip(a, b)]
+    deltas = [bi - ai for ai, bi in zip(a, b, strict=False)]
     means = sorted(
         sum(deltas[rng.randrange(n)] for _ in range(n)) / n
         for _ in range(n_resamples)
@@ -57,8 +57,8 @@ def mcnemar_exact(success_a: list[bool], success_b: list[bool]) -> float:
     """Two-sided exact McNemar p-value on paired binary outcomes."""
     if len(success_a) != len(success_b):
         raise ValueError("samples must be equal-length")
-    b01 = sum(1 for x, y in zip(success_a, success_b) if not x and y)  # A wrong, B right
-    b10 = sum(1 for x, y in zip(success_a, success_b) if x and not y)
+    b01 = sum(1 for x, y in zip(success_a, success_b, strict=False) if not x and y)  # A wrong, B right
+    b10 = sum(1 for x, y in zip(success_a, success_b, strict=False) if x and not y)
     n = b01 + b10
     if n == 0:
         return 1.0

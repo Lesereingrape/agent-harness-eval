@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 import re
-from typing import Callable
+from collections.abc import Callable
 
 from .trace import Trace
 
@@ -67,7 +67,7 @@ def _subset(want, got) -> bool:
         )
     if isinstance(want, list):
         return isinstance(got, list) and len(want) == len(got) and all(
-            _subset(w, g) for w, g in zip(want, got)
+            _subset(w, g) for w, g in zip(want, got, strict=False)
         )
     return want == got
 

@@ -1,0 +1,10 @@
+{
+  "name": "mini-qa",
+  "tasks": [
+    {"id": "t1", "prompt": "Capital of France?", "expected": "Paris", "criteria": "Answer is the capital of France"},
+    {"id": "t2", "prompt": "Largest planet?", "expected": "Jupiter", "criteria": "Answer is the largest planet"},
+    {"id": "t3", "prompt": "Author of Dune?", "expected": "Frank Herbert", "criteria": "Answer names the author of Dune"},
+    {"id": "t4", "prompt": "2+2?", "expected": "4", "criteria": "Answer is 4"},
+    {"id": "t5", "prompt": "H2O is?", "expected": "water", "criteria": "Answer identifies water"}
+  ]
+}

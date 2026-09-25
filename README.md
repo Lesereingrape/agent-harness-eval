@@ -21,6 +21,8 @@ tasks.json ──► Runner ──► TraceRecorder ──► traces.jsonl ─�
          + scorers        reward + metrics                McNemar p-value
 ```
 
+![ci](https://github.com/Lesereingrape/agent-harness-eval/actions/workflows/ci.yml/badge.svg)
+
 ## Quickstart
 
 ```bash

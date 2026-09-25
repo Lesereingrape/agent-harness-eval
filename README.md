@@ -30,14 +30,42 @@ pip install ahe            # pure stdlib core, Python >= 3.10
 ahe demo                   # zero-config tour with builtin mock agents
 ```
 
-```
-== agent: looper
-task   reward   ok  steps  tools  err  redun  recov  tokens
-t1       1.00 True      5      4    3   1.00   0.33     110   # right answer, wasteful loop
+<!-- DEMO:START -->
 ```
 
-All three demo agents finish with a usable answer, but `report` and `compare`
-expose the difference. That is the point.
+== agent: oracle
+task   reward    ok  steps  tools  err  redun  recov  tokens
+t1       1.00  True      2      1    0   0.00   1.00     105
+t2       1.00  True      2      1    0   0.00   1.00     105
+t3       1.00  True      2      1    0   0.00   1.00     105
+t4       1.00  True      2      1    0   0.00   1.00     105
+t5       1.00  True      2      1    0   0.00   1.00     105
+
+== agent: looper
+task   reward    ok  steps  tools  err  redun  recov  tokens
+t1       1.00  True      5      4    3   1.00   0.33     110
+t2       1.00  True      5      4    3   1.00   0.33     110
+t3       1.00  True      5      4    3   1.00   0.33     110
+t4       1.00  True      5      4    3   1.00   0.33     110
+t5       1.00  True      5      4    3   1.00   0.33     110
+
+== agent: flaky
+task   reward    ok  steps  tools  err  redun  recov  tokens
+t1       0.00 False      2      1    1   0.00   1.00      85
+t2       0.00 False      2      1    1   0.00   1.00      85
+t3       0.00 False      2      1    1   0.00   1.00      85
+t4       0.00 False      2      1    1   0.00   1.00      85
+t5       0.00 False      2      1    1   0.00   1.00      85
+```
+<!-- DEMO:END -->
+
+Two of the three agents are perfect on the reward column, and the table alone
+cannot tell them apart: `oracle` and `looper` both print 1.00 on all five tasks. The
+difference is in the columns beside it - the looper gets there through three failed
+`search` calls, 4 tool calls and 5 steps, so its `redun` is 1.00 where the oracle's is
+0.00, and it pays 110 tokens against the oracle's 105. `report` and `compare` are what
+turn that shape into a number you can act on; `flaky` is the case where the reward
+column suffices, at 0.00 and `ok False` on every task.
 
 ## Instrument your agent
 

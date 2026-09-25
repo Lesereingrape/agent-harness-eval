@@ -108,10 +108,12 @@ def _demo_paired(out_dir: Path) -> int:
 
 
 def _print_table(rows) -> None:
-    print(f"{'task':<6}{'reward':>7}{'ok':>5}{'steps':>7}{'tools':>7}{'err':>5}{'redun':>7}{'recov':>7}{'tokens':>8}")
+    print(f"{'task':<6}{'reward':>7}{'ok':>6}{'steps':>7}{'tools':>7}"
+          f"{'err':>5}{'redun':>7}{'recov':>7}{'tokens':>8}")
     for task_id, reward, m, ok in rows:
-        print(f"{task_id:<6}{reward:>7.2f}{bool(ok)!s:>5}{m.n_steps:>7}{m.n_tool_calls:>7}"
-              f"{m.n_errors:>5}{m.redundant_call_rate:>7.2f}{m.recovery_rate:>7.2f}{m.total_tokens:>8}")
+        print(f"{task_id:<6}{reward:>7.2f}{bool(ok)!s:>6}{m.n_steps:>7}{m.n_tool_calls:>7}"
+              f"{m.n_errors:>5}{m.redundant_call_rate:>7.2f}{m.recovery_rate:>7.2f}"
+              f"{m.total_tokens:>8}")
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -75,6 +75,8 @@ def cmd_compare(args: argparse.Namespace) -> int:
 
 def cmd_demo(args: argparse.Namespace) -> int:
     here = Path(__file__).resolve()
+    if args.paired:
+        return _demo_paired(Path(args.out_dir))
     suite = Suite.load(here.parents[2] / "examples" / "mini_qa.json")
     from .demo import flaky, looper, oracle
 
@@ -83,6 +85,25 @@ def cmd_demo(args: argparse.Namespace) -> int:
                           judge=HeuristicJudge()).run()
         print(f"\n== agent: {agent_id}")
         _print_table([(r.task.id, r.reward, r.metrics, r.trace.meta.get("success")) for r in rollouts])
+    return 0
+
+
+def _demo_paired(out_dir: Path) -> int:
+    """Write the two mock harnesses' traces so `ahe compare` has something real to read.
+
+    The pair in `ahe.demo.paired` differs in one mechanism (a single rephrased retry), so
+    the numbers `ahe compare` prints afterwards are a property of shipped code and a seed,
+    not of somebody's memory of a run.
+    """
+    from .demo.paired import harness_a, harness_b, paired_suite
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    suite = paired_suite()
+    for name, agent in [("a", harness_a), ("b", harness_b)]:
+        rollouts = Runner(suite, agent, agent_id=name, harness_id=f"mock-{name}").run()
+        write_traces(out_dir / f"{name}.jsonl", (r.trace for r in rollouts))
+    print(f"wrote {out_dir}/a.jsonl and {out_dir}/b.jsonl "
+          f"({len(suite.tasks)} paired tasks)")
     return 0
 
 
@@ -118,6 +139,10 @@ def main(argv: list[str] | None = None) -> int:
     rp.set_defaults(fn=cmd_report)
 
     d = sub.add_parser("demo", help="run builtin demo agents on examples/mini_qa.json")
+    d.add_argument("--paired", action="store_true",
+                   help="write the 120-task mock harness pair instead, for `ahe compare`")
+    d.add_argument("--out-dir", default="paired_traces",
+                   help="directory for --paired's a.jsonl / b.jsonl")
     d.set_defaults(fn=cmd_demo)
 
     args = p.parse_args(argv)

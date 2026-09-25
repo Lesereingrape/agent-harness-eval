@@ -75,16 +75,30 @@ ahe run --suite suite.json --agent pkg.openclaw:rollout    --out b.jsonl
 ahe compare a.jsonl b.jsonl
 ```
 
+Here is that command run for real, on the mock pair the library ships for the purpose:
+`ahe demo --paired` writes 120 paired traces of two harnesses that differ in exactly one
+mechanism (B rephrases and retries a failed lookup once, A does not), and the block below
+is what `ahe compare` printed afterwards. A test regenerates it, so it cannot rot into a
+sample output that no code produces:
+
+<!-- COMPARE:START -->
 ```
 tasks compared : 120
-A success rate : 0.617
-B success rate : 0.692
-bootstrap      : delta=+0.075 95% CI=[+0.017, +0.133] P(B>A)=0.995
-mcnemar exact  : p=0.0241
+A success rate : 0.750
+B success rate : 0.808
+bootstrap      : delta=+0.058 95% CI=[+0.017, +0.100] P(B>A)=0.999
+mcnemar exact  : p=0.0156
 ```
+<!-- COMPARE:END -->
 
-A 7.5-point gain with a CI that clears zero and p < 0.05 is a real gain.
-Everything else is noise.
+A 5.8-point gain whose bootstrap interval clears zero and whose exact paired test lands
+at p < 0.05 is a real gain; a 5.8-point gain with `95% CI=[-0.01, +0.12]` is a coin flip
+you happened to win. Reproduce it:
+
+```bash
+ahe demo --paired --out-dir /tmp/paired
+ahe compare /tmp/paired/a.jsonl /tmp/paired/b.jsonl
+```
 
 ## Metrics computed per trace
 
